@@ -7,60 +7,57 @@
 #include <random>
 
 
-PlacementMap generate_random_placement(const Scheme& scheme, bool fillersAllowed)
+void Chromosome::do_random_placement(const Scheme& scheme, CellsContainer& allCells)
 {
-	assert(scheme.validate());
-	CellsContainer cells = fillersAllowed ? scheme.getCellsWithFillers() : scheme.getCells();
-
-	size_t rows = scheme.getRows();
-	size_t cols = scheme.getCols();
-
-	PlacementMap placement;
-
 	std::random_device rd;
 	std::mt19937 g(rd());
-	std::shuffle(cells.begin(), cells.end(), g);
+	std::shuffle(allCells.begin(), allCells.end(), g);
 
-	for (size_t i = 0; i < rows; ++i)
+	for (size_t i = 0; i < scheme.getRows(); ++i)
 	{
-		for (size_t j = 0; j < cols; ++j)
+		for (size_t j = 0; j < scheme.getCols(); ++j)
 		{
-			if (cells.empty())
-				break;
+			if (allCells.empty())
+				return;
+			if (allCells.back().is_normalCell())
+			{
+				//the Cell coordinate must be invalid(-1,-1)
+				assert(this->operator[](allCells.back().getID()) == Coord::invalidCoord());
+				this->operator[](allCells.back().getID()) = Coord(i, j);
+			}
+			else if (allCells.back().is_filler())
+				this->m_fillers.push_back(Coord(i, j));
 
-			placement.emplace(cells.back().m_id, Coord(i, j));
-
-			cells.pop_back();
+			allCells.pop_back();
 		}
 	}
 
-	assert(cells.empty());
-
-	return placement;
+	assert(allCells.empty());
 }
 
 
-Chromosome Chromosome::generate_random_code(const Scheme& scheme, bool fillersAllowed)
+void Chromosome::generate_random_code(const Scheme& scheme, bool fillersAllowed)
 {
-	Chromosome chromosome;
+	//check the scheme validity
+	assert(scheme.is_valid());
 
-	auto placement = generate_random_placement(scheme, fillersAllowed);
-	size_t fillersCount = placement.count(Cell::fillerID);
+	//init (cells-coordinate) code with invalid Coordinates
+	m_code = CodeType(scheme.getCells().size(), Coord::invalidCoord());
+
+	//get Cells with Fillers if they allowed
+	CellsContainer allCells = fillersAllowed ? scheme.getCellsWithFillers() : scheme.getCells();
+	
+	//just reserve the place, for optimization purpose
+	size_t fillersCount = allCells.size() - scheme.getCells().size();
+	m_fillers.reserve(fillersCount);
+
+	//place the all Cells(with fillers) into the Commutation Field 
+	do_random_placement(scheme, allCells);
+
+	//just to be sure, everything worked correct
+	assert(fillersCount == m_fillers.size());
 	if (fillersAllowed)
-		assert(scheme.getCells().size() == scheme.getFieldSize() - fillersCount);
-
-	chromosome.m_code = CodeType(scheme.getCells().size(), Coord(-1, -1));
-	chromosome.m_fillers.reserve(fillersCount);
-
-	for (auto it = placement.begin(); it != placement.end(); ++it)
-	{
-		if (!it->first.is_filler())
-			chromosome.m_code[it->first.getID()] = it->second;
-		else // filler cell
-			chromosome.m_fillers.push_back(it->second);
-	}
-
-	return chromosome;
+		assert(scheme.getCells().size() == scheme.getFieldSize() - m_fillers.size());
 }
 
 

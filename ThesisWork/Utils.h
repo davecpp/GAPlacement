@@ -7,15 +7,22 @@ using int_t = int;
 template<typename Ty>
 using MatrixT = std::vector<std::vector<Ty>>;
 
-struct Coord
+class Coord
 {
+	static constexpr int_t invalidCoordinate = -1;
+public:
 	Coord(int_t i_x, int_t i_y) : x(i_x), y(i_y) {}
 	Coord() = default;
-	int_t x = -1;
-	int_t y = -1;
+	int_t x = invalidCoordinate;
+	int_t y = invalidCoordinate;
 
 	operator bool() {
 		return x >= 0 && y >= 0;
+	}
+
+	static Coord invalidCoord()
+	{
+		return Coord(invalidCoordinate, invalidCoordinate);
 	}
 };
 

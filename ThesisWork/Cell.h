@@ -13,14 +13,14 @@ using CellID = std::int32_t;
 struct Cell
 {
 	static constexpr CellID fillerID = -1;
-	static constexpr CellID invalidCell = -2;
+	static constexpr CellID invalidID = -2;
 
 	Cell() = default;
 	Cell(CellID i_id) : m_id(i_id) {};
 	Cell(std::string i_name, CellID i_id) : m_name(i_name), m_id(i_id) {}
 
 	std::string m_name;
-	CellID m_id = invalidCell;
+	CellID m_id = invalidID;
 
 	bool operator<(const Cell& other) const
 	{
@@ -30,6 +30,11 @@ struct Cell
 	bool is_filler() const
 	{
 		return m_id == fillerID;
+	}
+
+	bool is_normalCell() const
+	{
+		return m_id >= 0;
 	}
 
 	const CellID getID() const

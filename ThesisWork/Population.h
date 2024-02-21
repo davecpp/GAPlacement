@@ -15,7 +15,8 @@ inline PoipulationT generate_random_population(size_t populationSize, const Sche
 
 	for (size_t i = 0; i < populationSize; ++i)
 	{
-		Chromosome placement = Chromosome::generate_random_code(scheme);
+		Chromosome placement;
+		placement.generate_random_code(scheme);
 		population.push_back(placement);
 	}
 }

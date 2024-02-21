@@ -9,16 +9,13 @@ using PlacementMap = std::multimap<Cell, Coord>;
 using ChromosomeType = std::vector<Coord>;
 
 
-PlacementMap generate_random_placement(const Scheme& scheme, bool fillersAllowed);
-
-
-
 class Chromosome
 {
 	//index is CellID, position is Coord
 	using CodeType = std::vector<Coord>;
-
+	//Cell-Coord coding system
 	CodeType m_code;
+	//Filler Cells, if the Commutation Field is bigger we can fill it with fillers
 	std::vector<Coord> m_fillers;
 public:
 
@@ -32,7 +29,7 @@ public:
 		return m_code[i];
 	}
 
-	const std::vector<Coord> getFillers()
+	const std::vector<Coord>& getFillers() const
 	{
 		return m_fillers;
 	}
@@ -42,5 +39,12 @@ public:
 		return m_code.size();
 	}
 
-	static Chromosome generate_random_code(const Scheme& scheme, bool fillersAllowed = true);
+
+	//random Chromosome generation, with code and fillers if they allowed
+	void generate_random_code(const Scheme& scheme, bool fillersAllowed = true);
+
+private:
+	//The random placement algorithm
+	void do_random_placement(const Scheme& scheme, CellsContainer& allCells);
+
 };

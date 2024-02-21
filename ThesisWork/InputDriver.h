@@ -54,7 +54,7 @@ public:
 		return cellsWithFilers;
 	}
 
-	bool validate() const
+	bool is_valid() const
 	{
 		return checkField() && checkCellsConnections();
 	}
