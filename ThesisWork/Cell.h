@@ -3,12 +3,11 @@
 
 #include <vector>
 #include <string>
-#include <cmath>
-#include <cassert>
 
 
 
-using CellID = std::int32_t;
+
+using CellID = int_t;
 
 struct Cell
 {
@@ -62,6 +61,7 @@ inline CellsContainer generate_cells(size_t cellsCount)
 
 	return cells;
 }
+
 
 
 

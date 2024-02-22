@@ -1,4 +1,7 @@
 #pragma once
+
+#include <cassert>
+
 #include "Cell.h"
 #include "ConnectivityMatrix.h"
 
@@ -17,14 +20,17 @@ class Scheme {
 
 public:
 
-	size_t getRows() const {
+	size_t getFieldRows() const
+	{
 		return m_field.rows;
 	}
-	size_t getCols() const {
+	size_t getFieldCols() const
+	{
 		return m_field.cols;
 	}
 
-	size_t getFieldSize() const {
+	size_t getFieldSize() const
+	{
 		return m_field.rows * m_field.cols;
 	}
 
@@ -37,7 +43,8 @@ public:
 	{
 		m_cells = cells;
 	}
-	const CellsContainer& getCells() const {
+	const CellsContainer& getCells() const
+	{
 		return m_cells;
 	}
 
@@ -46,32 +53,15 @@ public:
 		m_connections = connections;
 	}
 
-	CellsContainer getCellsWithFillers() const
-	{
-		assert(checkField());
-		auto cellsWithFilers = m_cells;
-		cellsWithFilers.resize(getRows() * getCols(), Cell::fillerID);
-		return cellsWithFilers;
-	}
-
 	bool is_valid() const
 	{
 		return checkField() && checkCellsConnections();
 	}
 
+	CellsContainer getCellsWithFillers() const;
 
 private:
-	bool checkCellsConnections() const {
-		if (m_connections.empty() && m_connections.size() != m_cells.size())
-			return false;
-		auto cols = m_connections.size();
-		for (size_t i = 0; i < m_connections.size(); ++i)
-		{
-			if (m_connections[i].size() != cols)
-				return false;
-		}
-		return true;
-	}
+	bool checkCellsConnections() const;
 	bool checkField() const
 	{
 		return getFieldSize() >= m_cells.size();

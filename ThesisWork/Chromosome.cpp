@@ -1,4 +1,4 @@
-#include "Placement.h"
+#include "Chromosome.h"
 #include "InputDriver.h"
 
 #include <cassert>
@@ -13,9 +13,9 @@ void Chromosome::do_random_placement(const Scheme& scheme, CellsContainer& allCe
 	std::mt19937 g(rd());
 	std::shuffle(allCells.begin(), allCells.end(), g);
 
-	for (size_t i = 0; i < scheme.getRows(); ++i)
+	for (size_t i = 0; i < scheme.getFieldRows(); ++i)
 	{
-		for (size_t j = 0; j < scheme.getCols(); ++j)
+		for (size_t j = 0; j < scheme.getFieldCols(); ++j)
 		{
 			if (allCells.empty())
 				return;
@@ -46,7 +46,7 @@ void Chromosome::generate_random_code(const Scheme& scheme, bool fillersAllowed)
 
 	//get Cells with Fillers if they allowed
 	CellsContainer allCells = fillersAllowed ? scheme.getCellsWithFillers() : scheme.getCells();
-	
+
 	//just reserve the place, for optimization purpose
 	size_t fillersCount = allCells.size() - scheme.getCells().size();
 	m_fillers.reserve(fillersCount);
@@ -61,4 +61,29 @@ void Chromosome::generate_random_code(const Scheme& scheme, bool fillersAllowed)
 }
 
 
+MatrixT<CellID> Chromosome::getCorrespondingComutField(size_t row, size_t col) const
+{
+	auto res = makeMatrix<MatrixT<CellID>>(row, col, Cell::invalidID);
 
+	for (size_t cellID = 0; cellID < this->size(); cellID++)
+	{
+		Coord c = this->operator[](cellID);
+		if (c.isValidCoord())
+			res[c.x()][c.y()] = cellID;
+	}
+
+	const auto& fillers = this->getFillers();
+	for (size_t i = 0; i < fillers.size(); i++)
+	{
+		Coord c = fillers[i];
+		if (c.isValidCoord())
+			res[c.x()][c.y()] = Cell::fillerID;
+	}
+
+	return res;
+}
+
+MatrixT<CellID> Chromosome::getCorrespondingComutField(const Scheme& scheme) const
+{
+	return getCorrespondingComutField(scheme.getFieldRows(), scheme.getFieldCols());
+}

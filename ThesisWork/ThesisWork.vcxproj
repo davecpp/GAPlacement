@@ -142,14 +142,17 @@
   <ItemGroup>
     <ClInclude Include="Cell.h" />
     <ClInclude Include="ConnectivityMatrix.h" />
+    <ClInclude Include="Coord.h" />
     <ClInclude Include="InputDriver.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Genetic.h" />
-    <ClInclude Include="Placement.h" />
+    <ClInclude Include="Chromosome.h" />
     <ClInclude Include="Population.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Placement.cpp" />
+    <ClCompile Include="Chromosome.cpp" />
+    <ClCompile Include="Genetic.cpp" />
+    <ClCompile Include="InputDriver.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

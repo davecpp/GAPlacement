@@ -2,7 +2,7 @@
 #include <iomanip>
 #include "Utils.h"
 #include "Cell.h"
-#include "Placement.h"
+#include "Chromosome.h"
 #include "Genetic.h"
 #include "InputDriver.h"
 
@@ -22,31 +22,6 @@ void printMatrix(const MatrixT<T>& matrix)
 
 
 
-MatrixT<CellID> chromosomeToComutField(const Chromosome& chromosome, size_t row, size_t col)
-{
-	auto res = makeMatrix<MatrixT<CellID>>(row, col, Cell::invalidID);
-
-	for (size_t cellID = 0; cellID < chromosome.size(); cellID++)
-	{
-		Coord t = chromosome[cellID];
-		if (t)
-			res[t.x][t.y] = cellID;
-	}
-
-	const auto& fillers = chromosome.getFillers();
-	for (size_t i = 0; i < fillers.size(); i++)
-	{
-		Coord t = fillers[i];
-		if (t)
-			res[t.x][t.y] = Cell::fillerID;
-	}
-
-	return res;
-}
-
-
-
-
 int main()
 {
 	Scheme scheme;
@@ -58,8 +33,8 @@ int main()
 	Chromosome chromosome;
 	chromosome.generate_random_code(scheme, true);
 
-	printMatrix(chromosomeToComutField(chromosome, scheme.getRows(), scheme.getCols()));
+	printMatrix(chromosome.getCorrespondingComutField(scheme));
 
-	std::cout << "Fitness = " << Calc_Fitness(chromosome, connections);
+	std::cout << "Fitness = " << GA_Driver::Calc_Fitness(chromosome, connections);
 
 }

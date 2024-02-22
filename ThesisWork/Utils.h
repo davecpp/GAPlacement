@@ -2,30 +2,10 @@
 #include <vector>
 #include <type_traits>
 
-using int_t = int;
+using int_t = std::int32_t;
 
 template<typename Ty>
 using MatrixT = std::vector<std::vector<Ty>>;
-
-class Coord
-{
-	static constexpr int_t invalidCoordinate = -1;
-public:
-	Coord(int_t i_x, int_t i_y) : x(i_x), y(i_y) {}
-	Coord() = default;
-	int_t x = invalidCoordinate;
-	int_t y = invalidCoordinate;
-
-	operator bool() {
-		return x >= 0 && y >= 0;
-	}
-
-	static Coord invalidCoord()
-	{
-		return Coord(invalidCoordinate, invalidCoordinate);
-	}
-};
-
 
 template<typename T>
 struct is_integral_matrix : std::false_type {};
