@@ -11,6 +11,9 @@ class GA_Driver {
 	struct GA_Params {
 		size_t m_populationSize;
 		size_t m_itersCount;
+		double m_crossoverProbability;
+		double m_mutationProbability;
+		double epsilon;
 		// ...
 	};
 

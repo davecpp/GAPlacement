@@ -68,16 +68,16 @@ MatrixT<CellID> Chromosome::getCorrespondingComutField(size_t row, size_t col) c
 	for (size_t cellID = 0; cellID < this->size(); cellID++)
 	{
 		Coord c = this->operator[](cellID);
-		if (c.isValidCoord())
-			res[c.x()][c.y()] = cellID;
+		assert(c.isValidCoord());
+		res[c.x()][c.y()] = cellID;
 	}
 
 	const auto& fillers = this->getFillers();
 	for (size_t i = 0; i < fillers.size(); i++)
 	{
 		Coord c = fillers[i];
-		if (c.isValidCoord())
-			res[c.x()][c.y()] = Cell::fillerID;
+		assert(c.isValidCoord());
+		res[c.x()][c.y()] = Cell::fillerID;
 	}
 
 	return res;

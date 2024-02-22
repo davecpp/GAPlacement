@@ -19,8 +19,12 @@ inline AdjacencyMatrixT generate_random_adjacency_matrix(size_t cells_count)
 
 	for (size_t i = 0; i < cells_count; ++i)
 	{
-		for (size_t j = 0; j < cells_count; ++j)
+		for (size_t j = i + 1; j < cells_count; ++j)
+		{
 			connections[i][j] = generate_random_connection();
+			connections[j][i] = connections[i][j];
+		}
+
 	}
 
 	return connections;
