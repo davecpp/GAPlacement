@@ -3,7 +3,7 @@
 #include <random>
 
 using Connections = size_t;
-constexpr size_t connection_max_weight = 5;
+constexpr size_t connection_max_weight = 10;
 inline Connections generate_random_connection()
 {
 	return std::rand() % connection_max_weight;

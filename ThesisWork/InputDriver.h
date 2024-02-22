@@ -17,6 +17,7 @@ class Scheme {
 	CellsContainer m_cells;
 	AdjacencyMatrixT m_connections;
 	ComutFieldParams m_field;
+	bool m_fillersAllowed = true;
 
 public:
 
@@ -51,6 +52,19 @@ public:
 	void setConnections(const AdjacencyMatrixT& connections)
 	{
 		m_connections = connections;
+	}
+	const AdjacencyMatrixT& getConnections() const
+	{
+		return m_connections;
+	}
+
+	void fillersAllowed(bool val)
+	{
+		m_fillersAllowed = val;
+	}
+	bool is_fillersAllowed() const
+	{
+		return m_fillersAllowed;
 	}
 
 	bool is_valid() const

@@ -10,13 +10,22 @@ using ChromosomeType = std::vector<Coord>;
 
 class Chromosome
 {
+public:
 	//index is CellID, position is Coord
 	using CodeType = std::vector<Coord>;
+	using FillersType = std::vector<Coord>;
+private:
 	//Cell-Coord coding system
 	CodeType m_code;
 	//Filler Cells, if the Commutation Field is bigger we can fill it with fillers
-	std::vector<Coord> m_fillers;
+	FillersType m_fillers;
 public:
+
+	Chromosome(const Scheme& scheme)
+	{
+		//init (cells-coordinate) code with invalid Coordinates
+		m_code = CodeType(scheme.getCells().size(), Coord::invalidCoord());
+	}
 
 	//get Coordinate of corresponding cell
 	Coord& operator[](size_t i)
@@ -33,18 +42,32 @@ public:
 		return m_code.size();
 	}
 
-	const std::vector<Coord>& getFillers() const
+	const FillersType& getFillers() const
 	{
 		return m_fillers;
 	}
 
+	//only for optimization purpose
+	void reservePlaceForFillers(size_t size)
+	{
+		m_fillers.reserve(size);
+	}
+	void addFiller(FillersType::value_type coord)
+	{
+		m_fillers.push_back(coord);
+	}
+
 
 	//random Chromosome generation, with code and fillers if they allowed
-	void generate_random_code(const Scheme& scheme, bool fillersAllowed = true);
+	void generate_random_code(const Scheme& scheme);
 
 	//Construct and return corresponding commutation field for Chromosome
 	MatrixT<CellID> getCorrespondingComutField(size_t row, size_t col) const;
 	MatrixT<CellID> getCorrespondingComutField(const Scheme& scheme) const;
+
+	//check the chromosome validity
+	bool is_valid(const Scheme& scheme);
+
 private:
 	//The random placement algorithm
 	void do_random_placement(const Scheme& scheme, CellsContainer& allCells);

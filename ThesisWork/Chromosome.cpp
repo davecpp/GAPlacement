@@ -26,7 +26,7 @@ void Chromosome::do_random_placement(const Scheme& scheme, CellsContainer& allCe
 				this->operator[](allCells.back().getID()) = Coord(i, j);
 			}
 			else if (allCells.back().is_filler())
-				this->m_fillers.push_back(Coord(i, j));
+				addFiller(Coord(i, j));
 
 			allCells.pop_back();
 		}
@@ -36,28 +36,24 @@ void Chromosome::do_random_placement(const Scheme& scheme, CellsContainer& allCe
 }
 
 
-void Chromosome::generate_random_code(const Scheme& scheme, bool fillersAllowed)
+void Chromosome::generate_random_code(const Scheme& scheme)
 {
 	//check the scheme validity
 	assert(scheme.is_valid());
 
-	//init (cells-coordinate) code with invalid Coordinates
-	m_code = CodeType(scheme.getCells().size(), Coord::invalidCoord());
-
 	//get Cells with Fillers if they allowed
-	CellsContainer allCells = fillersAllowed ? scheme.getCellsWithFillers() : scheme.getCells();
+	CellsContainer allCells = scheme.is_fillersAllowed() ? scheme.getCellsWithFillers() : scheme.getCells();
 
 	//just reserve the place, for optimization purpose
 	size_t fillersCount = allCells.size() - scheme.getCells().size();
-	m_fillers.reserve(fillersCount);
+	reservePlaceForFillers(fillersCount);
 
 	//place the all Cells(with fillers) into the Commutation Field 
 	do_random_placement(scheme, allCells);
 
 	//just to be sure, everything worked correct
 	assert(fillersCount == m_fillers.size());
-	if (fillersAllowed)
-		assert(scheme.getCells().size() == scheme.getFieldSize() - m_fillers.size());
+	assert(this->is_valid(scheme));
 }
 
 
@@ -86,4 +82,30 @@ MatrixT<CellID> Chromosome::getCorrespondingComutField(size_t row, size_t col) c
 MatrixT<CellID> Chromosome::getCorrespondingComutField(const Scheme& scheme) const
 {
 	return getCorrespondingComutField(scheme.getFieldRows(), scheme.getFieldCols());
+}
+
+
+bool Chromosome::is_valid(const Scheme& scheme)
+{
+	assert(scheme.is_valid());
+	if (scheme.is_fillersAllowed() &&
+		(scheme.getCells().size() != scheme.getFieldSize() - m_fillers.size()))
+		return false;
+
+	//there is no normal Cell(gene) with invalid Coord
+	for (size_t i = 0; i < this->size(); i++)
+	{
+		if (!this->operator[](i).isValidCoord())
+			return false;
+	}
+
+	//there is no filler Cell with invalid coord
+	for (size_t i = 0; i < m_fillers.size(); i++)
+	{
+		if (!m_fillers[i].isValidCoord())
+			return false;
+	}
+
+	return true;
+
 }

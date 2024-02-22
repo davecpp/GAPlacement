@@ -25,16 +25,32 @@ void printMatrix(const MatrixT<T>& matrix)
 int main()
 {
 	Scheme scheme;
+	scheme.fillersAllowed(true);
 	scheme.setCells(generate_cells(100));
 	scheme.setFieldParams(ComutFieldParams(11, 11));
 	auto connections = generate_random_adjacency_matrix(scheme.getCells().size());
 	scheme.setConnections(connections);
 
-	Chromosome chromosome;
-	chromosome.generate_random_code(scheme, true);
+	Chromosome parent1(scheme);
 
-	printMatrix(chromosome.getCorrespondingComutField(scheme));
+	parent1.generate_random_code(scheme);
 
-	std::cout << "Fitness = " << GA_Driver::Calc_Fitness(chromosome, connections);
+	//printMatrix(parent1.getCorrespondingComutField(scheme));
+
+	Chromosome parent2(scheme);
+	parent2.generate_random_code(scheme);
+
+	//printMatrix(parent2.getCorrespondingComutField(scheme));
+
+	Chromosome child = GA_Driver::Crossover(parent1, parent2, 0.5, scheme);
+
+	//printMatrix(child.getCorrespondingComutField(scheme));
+
+	std::cout << "Fitness1 = " << Population::Calc_Fitness(parent1, scheme) << std::endl;
+	std::cout << "Fitness2 = " << Population::Calc_Fitness(parent2, scheme) << std::endl;
+	std::cout << "Child Fitness = " << Population::Calc_Fitness(child, scheme) << std::endl;
+
+	GA_Driver driver(25);
+	driver.run(scheme);
 
 }
