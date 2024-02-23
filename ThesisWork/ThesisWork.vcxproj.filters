@@ -53,5 +53,8 @@
     <ClCompile Include="Genetic.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="Population.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

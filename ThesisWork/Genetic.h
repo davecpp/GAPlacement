@@ -9,10 +9,10 @@
 class GA_Driver {
 
 	struct GA_Params {
-		size_t m_itersCount = 1000;
-		double filterPopulationCoeff = 0.5;
+		size_t m_itersCount = 100;
+		double filterPopulationCoeff = 0.4;
 		double m_crossoverProbability;
-		double m_mutationProbability;
+		double m_mutationProbability = 0.75;
 		double epsilon = 0.001;
 		// ...
 	};
@@ -28,10 +28,15 @@ class GA_Driver {
 	// choose the ParentGene with given probability
 	static bool probabilityChooser(double prob);// probability between 0.0 and 1.0
 
+	//Mutate the individual with given probability for chromosome
+	static void Mutate(Chromosome& chromosome, double chromosomeMutProbability);
+
 public:
 
 	GA_Driver(size_t populationSize) : m_population(populationSize) {}
 
+	//crossover p1 and p2 parents, tale genes from p1 with probabilityOfP1 probability, return child individ
+	//TODO - make function private
 	static Chromosome Crossover(const Chromosome& p1, const Chromosome& p2, double probabilityOfP1, const Scheme& scheme);
 
 	void run(const Scheme& scheme);

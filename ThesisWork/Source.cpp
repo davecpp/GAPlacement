@@ -26,8 +26,8 @@ int main()
 {
 	Scheme scheme;
 	scheme.fillersAllowed(true);
-	scheme.setCells(generate_cells(100));
-	scheme.setFieldParams(ComutFieldParams(11, 11));
+	scheme.setCells(generate_cells(1000));
+	scheme.setFieldParams(ComutFieldParams(210, 21));
 	auto connections = generate_random_adjacency_matrix(scheme.getCells().size());
 	scheme.setConnections(connections);
 

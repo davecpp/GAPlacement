@@ -153,6 +153,7 @@
     <ClCompile Include="Chromosome.cpp" />
     <ClCompile Include="Genetic.cpp" />
     <ClCompile Include="InputDriver.cpp" />
+    <ClCompile Include="Population.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

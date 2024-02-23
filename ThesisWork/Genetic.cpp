@@ -77,7 +77,18 @@ Chromosome GA_Driver::Crossover(const Chromosome& parent1, const Chromosome& par
 
 }
 
-
+void GA_Driver::Mutate(Chromosome& chromosome, double chromosomeMutProbability)
+{
+	double geneMutationProbability = chromosomeMutProbability / chromosome.size();
+	for (size_t i = 0; i < chromosome.size(); i++)
+	{
+		if (probabilityChooser(geneMutationProbability))
+		{
+			auto swapIndex = std::rand() % chromosome.size();
+			std::swap(chromosome[i], chromosome[swapIndex]);
+		}
+	}
+}
 
 void GA_Driver::run(const Scheme& scheme)
 {
@@ -96,17 +107,19 @@ void GA_Driver::run(const Scheme& scheme)
 			double parent2Fitness = m_population[it.second].second;
 
 			double parent1Probability = parent1Fitness / (parent1Fitness + parent2Fitness);
-			Chromosome c = Crossover(m_population[it.first].first, m_population[it.second].first, parent1Probability, scheme);
-			double f = Population::Calc_Fitness(c, scheme);
-			m_population.addChromosome(std::move(c), f);
+			Chromosome child = Crossover(m_population[it.first].first, m_population[it.second].first, parent1Probability, scheme);
+			Mutate(child, m_params.m_mutationProbability);
+			double f = Population::Calc_Fitness(child, scheme);
+			m_population.addChromosome(std::move(child), f);
 		}
 
 		double F = m_population.calculatePopulationFitness();
-		if (std::abs(prevFitness - F) < m_params.epsilon)
+		if (100 * std::abs(prevFitness - F) / F < m_params.epsilon)
 			break;
+
 		prevFitness = F;
 		std::cout << "Fitness = " << F << "\t";
 		m_population.sortPopulation();
-		std::cout << "Best individ = " << m_population[0].second << std::endl;
+		std::cout << "Best individ = " << m_population[0].second << "\titeration = " << i << std::endl;
 	}
 }
