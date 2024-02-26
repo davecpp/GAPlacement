@@ -56,7 +56,7 @@ public:
 	{
 		return m_populationSizeParam;
 	}
-	size_t missingIndivids()
+	size_t missingIndividsCount() const
 	{
 		return this->capacity() - this->size();
 	}
@@ -76,12 +76,12 @@ public:
 	void sortPopulation();
 
 
-	std::pair<int, int> pickParentsPair(const std::vector<double>& parentsProbabilities);
+	std::pair<int, int> pickParentsPair(const std::vector<double>& parentsProbabilities) const;
 
-	std::vector<double> getParentsProbabilities();
+	std::vector<double> getProbabilitiesOfBeingParents() const;
 
 	//get Parents pairs 
-	std::vector<std::pair<size_t, size_t>> getParentsPairs();
+	std::vector<std::pair<size_t, size_t>> getParentsPairs() const;
 
 	//Filter population and refill it with random chromosomes
 	void filterAndReFillPopulation(double filtrationCoeff, const Scheme& scheme)
@@ -90,7 +90,10 @@ public:
 		fillWithRandomPlacements(scheme);
 	}
 
-	double calculatePopulationFitness();
+	//the sum of all individuals fitness
+	double CalcFitnessSum() const;
+	//the average fitness function for population - SumOfFitness/size
+	double CalculatePopulationFitness() const;
 
 	static double Calc_Fitness(const Chromosome& chromosome, const Scheme& scheme);
 };

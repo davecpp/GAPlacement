@@ -46,6 +46,10 @@ public:
 	{
 		return m_fillers;
 	}
+	FillersType& getFillers()
+	{
+		return m_fillers;
+	}
 
 	//only for optimization purpose
 	void reservePlaceForFillers(size_t size)

@@ -32,10 +32,16 @@ Chromosome::CodeType::value_type GA_Driver::getGene(const Chromosome& chromosome
 bool GA_Driver::probabilityChooser(double prob)
 {
 	assert(prob >= 0.0 && prob <= 1.0);
-	static std::knuth_b rand_engine;
-	static std::uniform_real_distribution<> uniform_zero_to_one(0.0, 1.0);
+	// Create a random number generator
+	std::random_device rd;
+	std::mt19937 gen(rd());
 
-	return uniform_zero_to_one(rand_engine) >= prob;
+	// Generate a random number between 0 and 1
+	std::uniform_real_distribution<> dis(0.0, 1.0);
+	double random_value = dis(gen);
+
+	// Return true if the random number is less than the probability
+	return random_value < prob;
 }
 
 Chromosome GA_Driver::Crossover(const Chromosome& parent1, const Chromosome& parent2, double probabilityOfP1, const Scheme& scheme)
@@ -73,24 +79,37 @@ Chromosome GA_Driver::Crossover(const Chromosome& parent1, const Chromosome& par
 		}
 	}
 
-	return std::move(child);
+	assert(child.is_valid(scheme));
+	return child;
 
 }
 
-void GA_Driver::Mutate(Chromosome& chromosome, double chromosomeMutProbability)
+void GA_Driver::Mutate(Chromosome& chromosome, double chromosomeMutProbability, const Scheme& scheme)
 {
 	double geneMutationProbability = chromosomeMutProbability / chromosome.size();
 	for (size_t i = 0; i < chromosome.size(); i++)
 	{
 		if (probabilityChooser(geneMutationProbability))
 		{
+			if (scheme.is_fillersAllowed())
+			{
+				assert(chromosome.size() + chromosome.getFillers().size() == scheme.getFieldSize());
+				if (probabilityChooser(static_cast<double>(chromosome.getFillers().size()) / scheme.getFieldSize())) //swap with filler
+				{
+					auto fillerSwapIndex = std::rand() % chromosome.getFillers().size();
+					static_assert(std::is_same_v<Chromosome::CodeType::value_type, Chromosome::FillersType::value_type>, "Chromosome Code and Fillers must have the same value type");
+					std::swap(chromosome[i], chromosome.getFillers()[fillerSwapIndex]);
+					continue;
+				}
+			}
+
 			auto swapIndex = std::rand() % chromosome.size();
 			std::swap(chromosome[i], chromosome[swapIndex]);
 		}
 	}
 }
 
-void GA_Driver::run(const Scheme& scheme)
+Chromosome GA_Driver::run(const Scheme& scheme)
 {
 	double prevFitness = 0.0;
 	for (size_t i = 0; i < m_params.m_itersCount; i++)
@@ -106,20 +125,23 @@ void GA_Driver::run(const Scheme& scheme)
 			double parent1Fitness = m_population[it.first].second;
 			double parent2Fitness = m_population[it.second].second;
 
-			double parent1Probability = parent1Fitness / (parent1Fitness + parent2Fitness);
+			//lower fitness is must be chosen with bigger probability
+			double parent1Probability = 1 - (parent1Fitness / (parent1Fitness + parent2Fitness));
+
 			Chromosome child = Crossover(m_population[it.first].first, m_population[it.second].first, parent1Probability, scheme);
-			Mutate(child, m_params.m_mutationProbability);
+			Mutate(child, m_params.m_mutationProbability, scheme);
 			double f = Population::Calc_Fitness(child, scheme);
 			m_population.addChromosome(std::move(child), f);
 		}
 
-		double F = m_population.calculatePopulationFitness();
+		double F = m_population.CalculatePopulationFitness();
 		if (100 * std::abs(prevFitness - F) / F < m_params.epsilon)
 			break;
 
 		prevFitness = F;
-		std::cout << "Fitness = " << F << "\t";
+		std::cout << "Fitness = " << std::fixed << F << "\t";
 		m_population.sortPopulation();
 		std::cout << "Best individ = " << m_population[0].second << "\titeration = " << i << std::endl;
 	}
+	return m_population[0].first;
 }

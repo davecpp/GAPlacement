@@ -21,13 +21,12 @@ void printMatrix(const MatrixT<T>& matrix)
 }
 
 
-
 int main()
 {
 	Scheme scheme;
 	scheme.fillersAllowed(true);
-	scheme.setCells(generate_cells(1000));
-	scheme.setFieldParams(ComutFieldParams(210, 21));
+	scheme.setCells(generate_cells(200));
+	scheme.setFieldParams(ComutFieldParams(15, 15));
 	auto connections = generate_random_adjacency_matrix(scheme.getCells().size());
 	scheme.setConnections(connections);
 
@@ -51,6 +50,7 @@ int main()
 	std::cout << "Child Fitness = " << Population::Calc_Fitness(child, scheme) << std::endl;
 
 	GA_Driver driver(25);
-	driver.run(scheme);
+	auto BestIndivid = driver.run(scheme);
+	printMatrix(BestIndivid.getCorrespondingComutField(scheme));
 
 }

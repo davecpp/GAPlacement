@@ -26,7 +26,7 @@ size_t Population::filterPopulation(double filtrationCoeff)
 		m_population.pop_back();
 
 	assert(newPopulationSize == m_population.size());
-	return missingIndivids();//m_populationSizeParam - newPopulationSize;
+	return missingIndividsCount();//m_populationSizeParam - newPopulationSize;
 }
 
 //
@@ -38,50 +38,63 @@ void Population::sortPopulation()
 }
 
 
-std::pair<int, int> Population::pickParentsPair(const std::vector<double>& parentsProbabilities) {
+std::pair<int, int> Population::pickParentsPair(const std::vector<double>& parentsProbabilities)  const
+{
+	assert(parentsProbabilities.size() > 1);
 	// Randomly sample two indices based on the probabilities
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::discrete_distribution<> dist({ parentsProbabilities.begin(), parentsProbabilities.end() });
 	int index1 = dist(gen);
 	int index2 = dist(gen);
+	// Ensure index1 and index2 are distinct
+	while (index2 == index1) {
+		index2 = dist(gen);
+	}
 
 	// Return the pair of elements corresponding to the sampled indices
 	return { index1, index2 };
 }
 
-std::vector<double> Population::getParentsProbabilities()
+std::vector<double> Population::getProbabilitiesOfBeingParents() const
 {
-	double popFitness = calculatePopulationFitness();
+	//The sum of all individuals fitness
+	double popFitnessSum = CalcFitnessSum();
+
 	std::vector<double> parentsProbabilities(m_population.size(), 0.0);
 	for (size_t i = 0; i < parentsProbabilities.size(); i++)
 	{
-		parentsProbabilities[i] = m_population[i].second / popFitness;
+		parentsProbabilities[i] = //1.0 / m_population.size();
+			(popFitnessSum - m_population[i].second) / (popFitnessSum * (m_population.size() - 1));
 	}
 	return parentsProbabilities;
 }
 
 //get Parents pairs 
-std::vector<std::pair<size_t, size_t>> Population::getParentsPairs()
+std::vector<std::pair<size_t, size_t>> Population::getParentsPairs() const
 {
-	auto parentsProbabilities = getParentsProbabilities();
+	auto parentsProbabilities = getProbabilitiesOfBeingParents();
 	std::vector<std::pair<size_t, size_t>> parentsPairs;
-	parentsPairs.reserve(missingIndivids());
-	for (size_t i = 0; i < missingIndivids(); i++)
+	parentsPairs.reserve(missingIndividsCount());
+
+	for (size_t i = 0; i < missingIndividsCount(); i++)
 	{
 		parentsPairs.push_back(pickParentsPair(parentsProbabilities));
 	}
 	return parentsPairs;
 }
 
-double Population::calculatePopulationFitness()
+double Population::CalcFitnessSum() const
 {
-	double F = 0;
-	for (size_t i = 0; i < m_population.size(); i++)
-	{
-		F += m_population[i].second;
-	}
-	return F / m_population.size();
+	double F = 0.0;
+	for (const auto it : m_population)
+		F += it.second;
+	return F;
+}
+
+double Population::CalculatePopulationFitness() const
+{
+	return CalcFitnessSum() / m_population.size();
 }
 
 double Population::Calc_Fitness(const Chromosome& chromosome, const Scheme& scheme)

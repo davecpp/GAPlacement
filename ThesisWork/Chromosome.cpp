@@ -13,24 +13,43 @@ void Chromosome::do_random_placement(const Scheme& scheme, CellsContainer& allCe
 	std::mt19937 g(rd());
 	std::shuffle(allCells.begin(), allCells.end(), g);
 
-	for (size_t i = 0; i < scheme.getFieldRows(); ++i)
-	{
-		for (size_t j = 0; j < scheme.getFieldCols(); ++j)
-		{
-			if (allCells.empty())
-				return;
-			if (allCells.back().is_normalCell())
-			{
-				//the Cell coordinate must be invalid(-1,-1)
-				assert(this->operator[](allCells.back().getID()) == Coord::invalidCoord());
-				this->operator[](allCells.back().getID()) = Coord(i, j);
-			}
-			else if (allCells.back().is_filler())
-				addFiller(Coord(i, j));
 
-			allCells.pop_back();
+	auto placeElement = [&allCells, this](size_t i, size_t j)
+	{
+		if (allCells.empty())
+			return false;
+
+		if (allCells.back().is_normalCell())
+		{
+			//the Cell coordinate must be invalid(-1,-1)
+			assert(this->operator[](allCells.back().getID()) == Coord::invalidCoord());
+			this->operator[](allCells.back().getID()) = Coord(i, j);
 		}
+		else if (allCells.back().is_filler())
+			addFiller(Coord(i, j));
+
+		allCells.pop_back();
+		return true;
+	};
+
+#define SQUARETRAVERSINGALGORITHM
+#if defined(SQUARETRAVERSINGALGORITHM)
+	for (size_t level = 0; level < std::max(scheme.getFieldRows(), scheme.getFieldCols()); ++level)
+	{
+		for (size_t j = 0; j < level; j++)
+			if (!placeElement(level, j))
+				return;
+
+		for (size_t i = 0; i <= level; i++)
+			if (!placeElement(i, level))
+				return;
+
 	}
+#else
+	for (size_t i = 0; i < scheme.getFieldRows(); ++i)
+		for (size_t j = 0; j < scheme.getFieldCols(); ++j)		
+			placeElement(i, j);
+#endif
 
 	assert(allCells.empty());
 }
