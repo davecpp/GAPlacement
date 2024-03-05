@@ -13,7 +13,6 @@ void Chromosome::do_random_placement(const Scheme& scheme, CellsContainer& allCe
 	std::mt19937 g(rd());
 	std::shuffle(allCells.begin(), allCells.end(), g);
 
-
 	auto placeElement = [&allCells, this](size_t i, size_t j)
 	{
 		if (allCells.empty())
@@ -36,18 +35,19 @@ void Chromosome::do_random_placement(const Scheme& scheme, CellsContainer& allCe
 #if defined(SQUARETRAVERSINGALGORITHM)
 	for (size_t level = 0; level < std::max(scheme.getFieldRows(), scheme.getFieldCols()); ++level)
 	{
-		for (size_t j = 0; j < level; j++)
-			if (!placeElement(level, j))
-				return;
+		if (level < scheme.getFieldRows())
+			for (size_t j = 0; j < std::min(level + 1, scheme.getFieldCols()); j++)
+				if (!placeElement(level, j))
+					return;
 
-		for (size_t i = 0; i <= level; i++)
-			if (!placeElement(i, level))
-				return;
-
+		if (level < scheme.getFieldCols())
+			for (size_t i = 0; i < std::min(level + 1, scheme.getFieldRows()); i++)
+				if (i != (level) && !placeElement(i, level))
+					return;
 	}
 #else
 	for (size_t i = 0; i < scheme.getFieldRows(); ++i)
-		for (size_t j = 0; j < scheme.getFieldCols(); ++j)		
+		for (size_t j = 0; j < scheme.getFieldCols(); ++j)
 			placeElement(i, j);
 #endif
 

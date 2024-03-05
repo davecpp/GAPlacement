@@ -25,8 +25,8 @@ int main()
 {
 	Scheme scheme;
 	scheme.fillersAllowed(true);
-	scheme.setCells(generate_cells(200));
-	scheme.setFieldParams(ComutFieldParams(15, 15));
+	scheme.setCells(generate_cells(25));
+	scheme.setFieldParams(ComutFieldParams(5, 5));
 	auto connections = generate_random_adjacency_matrix(scheme.getCells().size());
 	scheme.setConnections(connections);
 
@@ -35,6 +35,7 @@ int main()
 	parent1.generate_random_code(scheme);
 
 	//printMatrix(parent1.getCorrespondingComutField(scheme));
+	//return 1;
 
 	Chromosome parent2(scheme);
 	parent2.generate_random_code(scheme);
@@ -51,6 +52,10 @@ int main()
 
 	GA_Driver driver(25);
 	auto BestIndivid = driver.run(scheme);
+	std::cout << "Best possible Fitness = " << scheme.BestFitness() << std::endl;
+
+	//printMatrix(connections);
+
 	printMatrix(BestIndivid.getCorrespondingComutField(scheme));
 
 }

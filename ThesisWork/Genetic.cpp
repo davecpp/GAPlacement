@@ -97,7 +97,8 @@ void GA_Driver::Mutate(Chromosome& chromosome, double chromosomeMutProbability, 
 				if (probabilityChooser(static_cast<double>(chromosome.getFillers().size()) / scheme.getFieldSize())) //swap with filler
 				{
 					auto fillerSwapIndex = std::rand() % chromosome.getFillers().size();
-					static_assert(std::is_same_v<Chromosome::CodeType::value_type, Chromosome::FillersType::value_type>, "Chromosome Code and Fillers must have the same value type");
+					static_assert(std::is_same_v<Chromosome::CodeType::value_type, Chromosome::FillersType::value_type>,
+						"Chromosome Code and Fillers must have the same value type");
 					std::swap(chromosome[i], chromosome.getFillers()[fillerSwapIndex]);
 					continue;
 				}

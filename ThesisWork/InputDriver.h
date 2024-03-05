@@ -74,6 +74,9 @@ public:
 
 	CellsContainer getCellsWithFillers() const;
 
+	//Experimental Function
+	double BestFitness();
+
 private:
 	bool checkCellsConnections() const;
 	bool checkField() const
