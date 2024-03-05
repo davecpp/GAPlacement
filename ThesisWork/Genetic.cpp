@@ -121,15 +121,15 @@ Chromosome GA_Driver::run(const Scheme& scheme)
 		auto parentsPairs = m_population.getParentsPairs();
 		assert(parentsPairs.size() == filteredsCount);
 
-		for (auto it : parentsPairs)
+		for (auto [parent1, parent2] : parentsPairs)
 		{
-			double parent1Fitness = m_population[it.first].second;
-			double parent2Fitness = m_population[it.second].second;
+			double parent1Fitness = m_population[parent1].fitness;
+			double parent2Fitness = m_population[parent2].fitness;
 
 			//lower fitness is must be chosen with bigger probability
 			double parent1Probability = 1 - (parent1Fitness / (parent1Fitness + parent2Fitness));
 
-			Chromosome child = Crossover(m_population[it.first].first, m_population[it.second].first, parent1Probability, scheme);
+			Chromosome child = Crossover(m_population[parent1].chromosome, m_population[parent2].chromosome, parent1Probability, scheme);
 			Mutate(child, m_params.m_mutationProbability, scheme);
 			double f = Population::Calc_Fitness(child, scheme);
 			m_population.addChromosome(std::move(child), f);
@@ -142,7 +142,7 @@ Chromosome GA_Driver::run(const Scheme& scheme)
 		prevFitness = F;
 		std::cout << "Fitness = " << std::fixed << F << "\t";
 		m_population.sortPopulation();
-		std::cout << "Best individ = " << m_population[0].second << "\titeration = " << i << std::endl;
+		std::cout << "Best individ = " << m_population[0].fitness << "\titeration = " << i << std::endl;
 	}
-	return m_population[0].first;
+	return m_population[0].chromosome;
 }

@@ -26,7 +26,7 @@ int main()
 	Scheme scheme;
 	scheme.fillersAllowed(true);
 	scheme.setCells(generate_cells(25));
-	scheme.setFieldParams(ComutFieldParams(5, 5));
+	scheme.setFieldParams(ComutFieldParams(15, 15));
 	auto connections = generate_random_adjacency_matrix(scheme.getCells().size());
 	scheme.setConnections(connections);
 
@@ -52,7 +52,7 @@ int main()
 
 	GA_Driver driver(25);
 	auto BestIndivid = driver.run(scheme);
-	std::cout << "Best possible Fitness = " << scheme.BestFitness() << std::endl;
+	//std::cout << "Best possible Fitness = " << scheme.BestFitness() << std::endl;
 
 	//printMatrix(connections);
 

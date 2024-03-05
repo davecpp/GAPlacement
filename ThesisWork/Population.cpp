@@ -3,7 +3,7 @@
 
 void Population::fillWithRandomPlacements(const Scheme& scheme)
 {
-	for (size_t i = m_population.size(); i < m_populationSizeParam; ++i)
+	for (size_t i = m_population.size(); i < m_populationCapacity; ++i)
 	{
 		Chromosome placement(scheme);
 		placement.generate_random_code(scheme);
@@ -22,7 +22,7 @@ size_t Population::filterPopulation(double filtrationCoeff)
 	sortPopulation();
 
 	//remove all elements with the lower fitness
-	for (size_t i = 0; i < m_populationSizeParam - newPopulationSize; i++)
+	for (size_t i = 0; i < m_populationCapacity - newPopulationSize; i++)
 		m_population.pop_back();
 
 	assert(newPopulationSize == m_population.size());
@@ -33,7 +33,7 @@ size_t Population::filterPopulation(double filtrationCoeff)
 void Population::sortPopulation()
 {
 	std::sort(m_population.begin(), m_population.end(), [](const auto& individ1, const auto& individ2) {
-		return individ1.second < individ2.second; // sort by fitness function
+		return individ1.fitness < individ2.fitness; // sort by fitness function
 	});
 }
 
@@ -65,7 +65,7 @@ std::vector<double> Population::getProbabilitiesOfBeingParents() const
 	for (size_t i = 0; i < parentsProbabilities.size(); i++)
 	{
 		parentsProbabilities[i] = //1.0 / m_population.size();
-			(popFitnessSum - m_population[i].second) / (popFitnessSum * (m_population.size() - 1));
+			(popFitnessSum - m_population[i].fitness) / (popFitnessSum * (m_population.size() - 1));
 	}
 	return parentsProbabilities;
 }
@@ -88,7 +88,7 @@ double Population::CalcFitnessSum() const
 {
 	double F = 0.0;
 	for (const auto it : m_population)
-		F += it.second;
+		F += it.fitness;
 	return F;
 }
 
