@@ -14,22 +14,22 @@ void Chromosome::do_random_placement(const Scheme& scheme, CellsContainer& allCe
 	std::shuffle(allCells.begin(), allCells.end(), g);
 
 	auto placeElement = [&allCells, this](size_t i, size_t j)
-	{
-		if (allCells.empty())
-			return false;
-
-		if (allCells.back().is_normalCell())
 		{
-			//the Cell coordinate must be invalid(-1,-1)
-			assert(this->operator[](allCells.back().getID()) == Coord::invalidCoord());
-			this->operator[](allCells.back().getID()) = Coord(i, j);
-		}
-		else if (allCells.back().is_filler())
-			addFiller(Coord(i, j));
+			if (allCells.empty())
+				return false;
 
-		allCells.pop_back();
-		return true;
-	};
+			if (allCells.back().is_normalCell())
+			{
+				//the Cell coordinate must be invalid(-1,-1)
+				assert(this->operator[](allCells.back().getID()) == Coord::invalidCoord());
+				this->operator[](allCells.back().getID()) = Coord(i, j);
+			}
+			else if (allCells.back().is_filler())
+				addFiller(Coord(i, j));
+
+			allCells.pop_back();
+			return true;
+		};
 
 #define SQUARETRAVERSINGALGORITHM
 #if defined(SQUARETRAVERSINGALGORITHM)
@@ -98,9 +98,35 @@ MatrixT<CellID> Chromosome::getCorrespondingComutField(size_t row, size_t col) c
 	return res;
 }
 
-MatrixT<CellID> Chromosome::getCorrespondingComutField(const Scheme& scheme) const
+
+MatrixT<Cell> Chromosome::getCorrespondingComutField(const Scheme& scheme) const
 {
-	return getCorrespondingComutField(scheme.getFieldRows(), scheme.getFieldCols());
+
+	auto row = scheme.getFieldRows();
+	auto col = scheme.getFieldCols();
+
+	auto res = makeMatrix<MatrixT<Cell>>(row, col, Cell{ Cell::invalidID });
+	const auto& cells = scheme.getCells();
+
+	for (size_t cellID = 0; cellID < this->size(); cellID++)
+	{
+		Coord c = this->operator[](cellID);
+		assert(c.isValidCoord());
+		// check that every Cell in CellsContainer is in the same place with his cellID
+		assert(cellID == cells[cellID].getID());
+
+		res[c.x()][c.y()] = cells[cellID];
+	}
+
+	const auto& fillers = this->getFillers();
+	for (size_t i = 0; i < fillers.size(); i++)
+	{
+		Coord c = fillers[i];
+		assert(c.isValidCoord());
+		res[c.x()][c.y()] = Cell{ Cell::fillerID };
+	}
+
+	return res;
 }
 
 

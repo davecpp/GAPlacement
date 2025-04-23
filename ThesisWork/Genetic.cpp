@@ -110,10 +110,10 @@ void GA_Driver::Mutate(Chromosome& chromosome, double chromosomeMutProbability, 
 	}
 }
 
-Chromosome GA_Driver::run(const Scheme& scheme)
+Chromosome GA_Driver::run(const Scheme& scheme, size_t iterations)
 {
 	double prevFitness = 0.0;
-	for (size_t i = 0; i < m_params.m_itersCount; i++)
+	for (size_t i = 0; i < iterations; i++)
 	{
 		m_population.fillWithRandomPlacements(scheme);
 		auto filteredsCount = m_population.filterPopulation(m_params.filterPopulationCoeff);
@@ -136,8 +136,8 @@ Chromosome GA_Driver::run(const Scheme& scheme)
 		}
 
 		double F = m_population.CalculatePopulationFitness();
-		if (100 * std::abs(prevFitness - F) / F < m_params.epsilon)
-			break;
+		/*if (100 * std::abs(prevFitness - F) / F < m_params.epsilon)
+			break;*/
 
 		prevFitness = F;
 		std::cout << "Fitness = " << std::fixed << F << "\t";

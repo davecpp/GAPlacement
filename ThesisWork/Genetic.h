@@ -9,7 +9,7 @@
 class GA_Driver {
 
 	struct GA_Params {
-		size_t m_itersCount = 100;
+		//size_t m_itersCount = 100;
 		double filterPopulationCoeff = 0.4;
 		//double m_crossoverProbability;
 		double m_mutationProbability = 0.75;
@@ -40,5 +40,5 @@ public:
 	static Chromosome Crossover(const Chromosome& p1, const Chromosome& p2, double probabilityOfP1, const Scheme& scheme);
 
 	// run Genetic Algorithm and return the most adapted individual with lower fitness
-	Chromosome run(const Scheme& scheme);
+	Chromosome run(const Scheme& scheme, size_t iterationsCount);
 };

@@ -1,5 +1,8 @@
 #include "Population.h"
 
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/polygon.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
 
 void Population::fillWithRandomPlacements(const Scheme& scheme)
 {
@@ -34,7 +37,7 @@ void Population::sortPopulation()
 {
 	std::sort(m_population.begin(), m_population.end(), [](const auto& individ1, const auto& individ2) {
 		return individ1.fitness < individ2.fitness; // sort by fitness function
-	});
+		});
 }
 
 
@@ -97,8 +100,28 @@ double Population::CalculatePopulationFitness() const
 	return CalcFitnessSum() / m_population.size();
 }
 
+
+
+// Define Boost types.
+namespace bg = boost::geometry;
+using BoostPoint = bg::model::d2::point_xy<int>;
+using BoostPolygon = bg::model::polygon<BoostPoint>;
+
+// Convert a vector of Coord to a Boost.Geometry polygon.
+BoostPolygon toBoostPolygon(const PolygonT& pts) {
+	BoostPolygon poly;
+	for (const auto& p : pts) {
+		bg::append(poly.outer(), BoostPoint(p.first, p.second));
+	}
+	bg::correct(poly); // Closes polygon and ensures correct ordering.
+	return poly;
+}
+
 double Population::Calc_Fitness(const Chromosome& chromosome, const Scheme& scheme)
 {
+	const auto& cells = scheme.getCells();
+
+
 	const AdjacencyMatrixT& adjMatrix = scheme.getConnections();
 	double f = 0;
 	const size_t cellsCount = chromosome.size();
@@ -109,6 +132,18 @@ double Population::Calc_Fitness(const Chromosome& chromosome, const Scheme& sche
 		for (size_t j = 0; j < cellsCount; j++)
 		{
 			f += static_cast<double>(adjMatrix[i][j]) * calc_dist(chromosome, i, j);
+
+			//auto poly1 = toBoostPolygon(cells[i].getPolygon(j, i));
+			//auto poly2 = toBoostPolygon(cells[j].getPolygon(j, i));
+			//// Compute the intersection and store results in a vector.
+			//std::vector<BoostPolygon> output;
+			//bg::intersection(poly1, poly2, output);
+
+			//if (!output.empty()) {
+			//	double area = bg::area(output[0]);
+			//	f += area;
+			//}
+
 		}
 	}
 	return f / chromosome.size();

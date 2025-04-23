@@ -67,7 +67,7 @@ public:
 
 	//Construct and return corresponding commutation field for Chromosome
 	MatrixT<CellID> getCorrespondingComutField(size_t row, size_t col) const;
-	MatrixT<CellID> getCorrespondingComutField(const Scheme& scheme) const;
+	MatrixT<Cell> getCorrespondingComutField(const Scheme& scheme) const;
 
 	//check the chromosome validity
 	bool is_valid(const Scheme& scheme);

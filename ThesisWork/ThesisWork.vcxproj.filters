@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Modules">
+      <UniqueIdentifier>{401e8b38-2802-40b3-9f41-62230a6d44aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\Headers">
+      <UniqueIdentifier>{1ce5ce72-2423-4f94-a9f8-d3c88c44bbd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\Sources">
+      <UniqueIdentifier>{bc8a60fe-ca09-4c60-aa71-845750e3c9f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cell.h">
@@ -39,6 +48,12 @@
     <ClInclude Include="Coord.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SFML_printer.h">
+      <Filter>Modules\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="toGeoJSON.h">
+      <Filter>Modules\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -55,6 +70,12 @@
     </ClCompile>
     <ClCompile Include="Population.cpp">
       <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SMF_printer.cpp">
+      <Filter>Modules\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="toGeoJSON.cpp">
+      <Filter>Modules\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

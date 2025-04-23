@@ -5,9 +5,9 @@
 #include <string>
 
 
-
-
 using CellID = int_t;
+using Point = std::pair<int_t, int_t>;
+using PolygonT = std::vector<Point>;
 
 struct Cell
 {
@@ -20,6 +20,9 @@ struct Cell
 
 	std::string m_name;
 	CellID m_id = invalidID;
+	int_t width = 8;
+	int_t height = 1;
+
 
 	bool operator<(const Cell& other) const
 	{
@@ -40,8 +43,17 @@ struct Cell
 	{
 		return m_id;
 	}
-	//int_t w = 1;
-	//int_t h = 1;
+
+	PolygonT getPolygon(int_t x, int_t y) const
+	{
+		return PolygonT{
+			{x, y},
+			{x, y + height},
+			{x + width, y + height},
+			{x + width, y},
+			{x, y}
+		};
+	}
 
 	//operator CellID()
 	//{
@@ -57,6 +69,8 @@ inline CellsContainer generate_cells(size_t cellsCount)
 	for (size_t i = 0; i < cellsCount; ++i)
 	{
 		cells[i].m_id = i;
+		cells[i].width = std::rand() % 4 + 1;
+		cells[i].height = std::rand() % 4 + 1;
 	}
 
 	return cells;
